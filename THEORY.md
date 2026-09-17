@@ -40,3 +40,6 @@ console.log("مرحبا".length);
 `Output. of second console.log: 5`
 `Output of third console.log: 5`
 
+The first two are different even though they both contain 5 characters each because the Arrabic characters of `مرحبا` are Unicode characters where a character takes 2 bytes each in UTF-8 encoding, where as the characters of `hello` are ASCII characters which take 1 byte per character in UTF-8 encoding.
+The third one is different because normal JavaScript strings are encoded in UTF-16 and one character take 1 byte.  
+
