@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { findAllProducts,findProductById, createProduct, updateProduct, deleteProduct, type NewProduct, type ProductUpdate } from "../services/product.service.js";
+import { findAllProducts,findProductById, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, type NewProduct, type ProductUpdate } from "../services/product.service.js";
 
 
 export function getAllProducts(req: Request, res: Response): void {
@@ -33,7 +33,7 @@ export function getProductById(req: Request, res: Response): void {
 }
 
 
-export function createProductHandler(req: Request, res: Response): void {
+export function createProduct(req: Request, res: Response): void {
   const body = req.body ?? {};
   const { name, price, category, stock } = body;
 
@@ -55,12 +55,12 @@ export function createProductHandler(req: Request, res: Response): void {
     stock: typeof stock === "number" && Number.isFinite(stock) ? stock : 0,
   };
 
-  const created = createProduct(data);
+  const created = createProductService(data);
   res.status(201).json(created);
 }
 
 
-export function updateProductHandler(req: Request, res: Response): void {
+export function updateProduct(req: Request, res: Response): void {
   const id = Number(req.params.id);
 
   if (!Number.isInteger(id) || id <= 0) {
@@ -85,7 +85,7 @@ export function updateProductHandler(req: Request, res: Response): void {
     update.stock = body.stock;
   }
 
-  const updated = updateProduct(id, update);
+  const updated = updateProductService(id, update);
   if (updated === null) {
     res.status(404).json({ error: "Product not found" });
     return;
@@ -95,7 +95,7 @@ export function updateProductHandler(req: Request, res: Response): void {
 }
 
 
-export function deleteProductHandler(req: Request, res: Response): void {
+export function deleteProduct(req: Request, res: Response): void {
   const id = Number(req.params.id);
 
   if (!Number.isInteger(id) || id <= 0) {
@@ -103,7 +103,7 @@ export function deleteProductHandler(req: Request, res: Response): void {
     return;
   }
 
-  const deleted = deleteProduct(id);
+  const deleted = deleteProductService(id);
   if (deleted === null) {
     res.status(404).json({ error: "Product not found" });
     return;
