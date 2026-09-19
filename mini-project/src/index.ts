@@ -2,7 +2,8 @@ import express from 'express'
 import { router as productRouter } from './routes/product.routes.ts';
 import { initProductService } from "./services/product.service.js";
 import { requestLogger } from './middleware/requestLogger.ts';
-
+import { notFoundHandler } from './middleware/notFoundHandler.ts';
+import { errorHandler } from './middleware/errorHandler.ts';
 
 async function loadProduct(): Promise<void> {
  
@@ -12,6 +13,8 @@ async function loadProduct(): Promise<void> {
   app.use(requestLogger);
   app.use(express.json());
   app.use("/api/products", productRouter);
+  app.use(notFoundHandler);
+   app.use(errorHandler);
   const port = Number(process.env.PORT ?? 3000);
   
   app.listen(port, () => {
