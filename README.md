@@ -38,3 +38,15 @@ heapUsed: 8.04 MB
 
 We see that using readFileSync, the headUsed (memory) is 105.75MB which is about 13x the heapUsed with createReadStream (8.04MB).
 The runtime is comparable, even though using createReadStream is still faster (890.00ms) compared to readFileSync (1192.66ms).
+
+## Output of `logs/app.logs` after running `cat logs/app.logs`:
+
+```bash
+2026-09-19T06:26:14.130Z [INFO]: GET / 404 4ms]
+2026-09-19T06:27:48.490Z [INFO]: GET / 200 9ms]
+2026-09-19T06:29:05.732Z [INFO]: POST / 401 28ms]
+2026-09-19T06:29:41.105Z [INFO]: Product created: {"id":10001,"name":"X","category":"uncategorized","price":1,"stock":0}]
+2026-09-19T06:29:41.106Z [INFO]: POST / 201 1ms]
+2026-09-19T06:30:59.253Z [INFO]: GET /nope 404 1ms]
+2026-09-19T06:31:53.027Z [INFO]: GET /boom 500 5ms]
+```
