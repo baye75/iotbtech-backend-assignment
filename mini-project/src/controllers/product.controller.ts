@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { findAllProducts,findProductById, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, type NewProduct, type ProductUpdate } from "../services/product.service.js";
+import { logger } from "../utils/logger.ts";
 
 
 export function getAllProducts(req: Request, res: Response): void {
@@ -56,6 +57,7 @@ export function createProduct(req: Request, res: Response): void {
   };
 
   const created = createProductService(data);
+  logger.info(`Product created: ${JSON.stringify(created)}`)
   res.status(201).json(created);
 }
 
@@ -90,7 +92,7 @@ export function updateProduct(req: Request, res: Response): void {
     res.status(404).json({ error: "Product not found" });
     return;
   }
-
+  logger.info(`Product with ID: ${id} updated`);
   res.status(200).json(updated);
 }
 
@@ -108,6 +110,6 @@ export function deleteProduct(req: Request, res: Response): void {
     res.status(404).json({ error: "Product not found" });
     return;
   }
-
+  logger.info(`Product with ID ${id} deleted`);
   res.status(200).json({ deleted: true, id });
 }
