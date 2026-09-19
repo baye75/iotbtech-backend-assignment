@@ -51,16 +51,43 @@ Read path must allocate ~5 GB in RAM, and this is assuming that there are no mul
 
 If an error occurs midwayduring file copy, `pipe()` does notprovide for error cleanup; source isn't destroyed and this leads to file leak; but for `pipeline()`, in case of an error ,idway during copy, it destroys the streams and propagates to an awaitable promise.
 
-6. `4e6f64652e6a73` and `Tm9kZS5qcw==`.
-7. "Flat" = constant memory regardless of input size: bucket grows linearly (O(file size)); pipe processes one chunk at a time so memory stays at chunk size (flat).
-8. Bun: runs `.ts` directly (no build step), super fast installs (`bun install` binary lockfile), built-in bundler + test runner. Judgement question — any justified answer. Node remains default for enterprise ecosystem maturity.
+## Question 6
+ 
+First console.log gave: `4e6f64652e6a73`
+Second console.log gave: `Tm9kZS5qcw==`
 
-9. `GET /api/products/featured` → `{ hit: "featured" }` (registered before `/:id`; order wins). `GET /api/products/42` → `{ hit: "by-id", id: "42" }`. `GET /api/products` → `{ hit: "fallback" }` via the mounted router `app.use` (router `GET /` not defined here, so `app.use("/api/products", ...)` fallback catches it — actually with the given `app.use("/api/products", (req,res)=>...)` the router's `GET "/"` would ALSO exist as a route inside a real setup; the teaching point is order + first-match-wins). Note: in the literal snippet there is no `productRouter` — the `app.use("/api/products", handler)` acts as fallback for `/api/products` after `/` matches nothing. Any answer showing awareness that specific routes must precede catches and that first match wins is correct.
-10. `req.params.id` is `string`. Convert with `Number(req.params.id)`. Express leaves URL segments as text because path segments are always textual on the wire.
-11. Routes = map URL→controller; controller = transport (parse req, call service, respond); service = data + business rules. Storage change → `product.service.ts` only (data lives in service layer).
-12. Missing `app.use(express.json())`. Must be before routes. Without it no middleware parses the body; `req.body` stays `undefined`.
-13. Mount prefix `/api/products`: `router.get("/")` → `GET /api/products`; `router.get("/:id")` → `GET /api/products/:id`; `router.get("/top")` → `GET /api/products/top`.
-14. (a) 201 Created — resource created; (b) 404 Not Found; (c) 400 Bad Request — malformed/incomplete input; (d) 500 Internal Server Error; (e) 200 OK.
+## Question 7
+
+By "flat", it means the memory remains constant regardless of input size. Bucket grows linearly in size while pipe processes one chunk at a time so memory stays constant at chunk size.
+
+## Question 8
+
+Bun runs `.ts` files directly without any build step, its package manager is super fast for installs (`bun install` binary lockfile), it also has a built-in bundler and test runner. However, I wouldn't choose Bun out of the box as Node remains default for most production applications and has the largest ecosystem.
+
+## Question 9
+
+
+## Question 10
+
+`req.params.id` is given as a `string`. To convert it to number, we use `Number(req.params.id)`. Express leaves it as text because path segments are always text on the wire.
+
+## Question 11
+
+Routes maps URL to controller. Controller parses request, response, and calls service. Service is where the data and business logic are defined. The only file to edit is one that stores the data;`product.service.ts` only since data lives in the service layer.
+
+## Question 12
+
+The missing line is `app.use(express.json())`. It has to go before routes. Without it, `req.body` stays `undefined`.
+
+## Question 13
+
+The prefix behaviour of `app.use("/api/products", productRouter)` means it mounts the router at a path prefix. The prefix is not a route — it's a filter that strips the matching portion of the URL before the router sees it. `router.get("/")` responds to `GET /api/products`; `router.get("/:id")` responds to `GET /api/products/:id`; `router.get("/top")` responds to `GET /api/products/top`.
+
+## Question 14
+
+(a) 201 Created — resource created; (b) 404 Not Found; (c) 400 Bad Request — malformed/incomplete input; (d) 500 Internal Server Error; (e) 200 OK.
+
+## Question 15
 
 15. Exact order:
    ```
@@ -71,10 +98,23 @@ If an error occurs midwayduring file copy, `pipe()` does notprovide for error cl
    M1 out
    ```
    `M1 out` runs AFTER the handler because `next()` resumes after the downstream chain completes; the code after `next()` runs when control unwinds back.
-16. Client sees an endless spinner/hang; terminal shows the earlier logs then silence. Express can't guess intent — middleware ending a request (auth reject) must be allowed, so it never auto-calls `next()`.
-17. Express inspects the function's declared param count (`fn.length`): 4 → error handler middleware; fewer → normal. Trimming to 3 silently demotes it to normal middleware and it stops catching errors.
-18. (a) `next()` continues to the next regular middleware. (b) `next(err)` skips all remaining regular middleware and jumps to the first 4-param error handler. Error path skips e.g. `express.json` down-stream routes.
-19. The middleware attaches a "finish" event listener to `res` and calls `next()`. The listener fires later, when the response has actually been sent (event loop). So the log line is written after `res.send()` completes — end-to-end duration.
-20. Express 4: the async rejection is unhandled — Express doesn't auto-forward, often logged as unhandled rejection. Express 5: auto-catches and forwards to error handler. Express 4 fixes: wrap in `try/catch` + `next(err)`, or wrap with `asyncHandler`. Check `npm ls express`.
-21. 404 = matched nothing (a route/fallback case, not an error), 500 = handler crashed. 404 handler before error handler so "no route" cases are answered as 404 before any real error can be mislabeled 500. Swapped: unknown paths would hit the error handler first and (with no error) fall through to... the 404 last is fine, but the convention and correct ordering is 404 first then 500 handler; if the error handler is placed before the 404 handler it still functions if written correctly, but the golden-pipeline order (routes → 404 → error) is the normalized, canonical one — and a naive swap places error handler before 404 so unknown routes return the error handler's fallback (500) incorrectly.
+
+## Question 16
+
+The page hangs and the client sees a continuous spinner. The terminal shows the earlier logs in the app and then go silent. Express cannot auto-call the `next()` function, it must be explicitly stated.
+
+## Question 17
+
+By default, the parameter count of an error handler accepted byExpress is 4, while anything less than that is treated as normal middleware. If the parameters are reduced to 3,it defaults to normal middleware and won't catch errors.
+
+## Question 18
+
+## Question 19
+
+The middleware attaches an event listener, "finish", to `res` and calls `next()`. The listener fires later, when the response has been sent. Hence the log line is written after `res.send()` completes — end-to-end duration.
+
+## Question 20
+
+## Question 21
+
 

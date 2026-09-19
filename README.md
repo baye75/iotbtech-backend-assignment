@@ -12,22 +12,6 @@ controller → route → middleware pipeline with structured logging and error h
 - [Initialize and Install dependencies](#initialize-and-install-dependencies)
 - [Phase A — Data Generation & Streaming](#phase-a--data-generation--streaming)
   - [Console Output](#console-output)
-  - [generate.ts](#generatets)
-  - [aggregate.ts (streaming)](#aggregatets-streaming)
-  - [aggregate-naive.ts (readFileSync comparison)](#aggregate-naivets-readfilesync-comparison)
-  - [copy.ts (pipeline)](#copyts-pipeline)
-  - [Benchmark Results](#benchmark-results)
-- [Phase B — Express API](#phase-b--express-api)
-  - [Service Layer](#service-layer)
-  - [Controller Layer](#controller-layer)
-  - [Routes](#routes)
-  - [Logger (Winston)](#logger-winston)
-  - [Request Logger Middleware](#request-logger-middleware)
-  - [API Key Guard](#api-key-guard)
-  - [404 Handler](#404-handler)
-  - [Error Handler](#error-handler)
-- [API Reference](#api-reference)
-
 
 ## Prerequisites
 

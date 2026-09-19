@@ -29,12 +29,3 @@ loadProduct().catch((err) => {
   console.error("Failed to start server:", err);
   process.exit(1);
 });
-
-// const app = express();
-// app.use(requestLogger);
-// app.use(express.json());
-// app.use("/api/products", productRouter);
-// app.use(notFoundHandler);
-// app.use(errorHandler);
-// const PORT = process.env.PORT ?? 3000;
-// app.listen(PORT, () => console.log(`API on :${PORT}`));
